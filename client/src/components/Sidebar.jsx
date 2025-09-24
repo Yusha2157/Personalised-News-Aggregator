@@ -50,61 +50,58 @@ export default function Sidebar({
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 40 }}
           onClick={onToggle}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        <div className="flex flex-col h-full">
+      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-2">
+          <div className="sidebar__header">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Filter className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 style={{ fontSize: 18, fontWeight: 700 }}>
                 Filters
               </h2>
             </div>
             <button
               onClick={onToggle}
-              className="lg:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="icon-btn"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Filter Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+          <div className="sidebar__content">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
                 Search Articles
               </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <div style={{ position: 'relative' }}>
+                <Search className="input-icon" />
                 <input
                   type="text"
                   value={filters.search || ''}
                   onChange={(e) => onFiltersChange({ search: e.target.value })}
                   placeholder="Search articles..."
-                  className="input pl-10"
+                  className="input input--with-icon"
                 />
               </div>
             </div>
 
             {/* Categories */}
-            <div>
+            <div className="fieldset">
               <button
                 onClick={() => toggleSection('categories')}
-                className="flex items-center justify-between w-full text-left"
+                className="fieldset__legend"
               >
-                <div className="flex items-center space-x-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Tag className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span style={{ fontWeight: 600 }}>
                     Categories
                   </span>
                 </div>
@@ -116,9 +113,9 @@ export default function Sidebar({
               </button>
               
               {expandedSections.categories && (
-                <div className="mt-3 space-y-2">
+                <div className="stack-sm" style={{ marginTop: 8 }}>
                   {categories.map((category) => (
-                    <label key={category} className="flex items-center space-x-2">
+                    <label key={category} className="check">
                       <input
                         type="checkbox"
                         checked={filters.categories?.includes(category) || false}
@@ -134,9 +131,9 @@ export default function Sidebar({
                             });
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className=""
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                      <span>
                         {category}
                       </span>
                     </label>
@@ -146,14 +143,14 @@ export default function Sidebar({
             </div>
 
             {/* Sources */}
-            <div>
+            <div className="fieldset">
               <button
                 onClick={() => toggleSection('sources')}
-                className="flex items-center justify-between w-full text-left"
+                className="fieldset__legend"
               >
-                <div className="flex items-center space-x-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Newspaper className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span style={{ fontWeight: 600 }}>
                     Sources
                   </span>
                 </div>
@@ -165,9 +162,9 @@ export default function Sidebar({
               </button>
               
               {expandedSections.sources && (
-                <div className="mt-3 space-y-2">
+                <div className="stack-sm" style={{ marginTop: 8 }}>
                   {sources.map((source) => (
-                    <label key={source} className="flex items-center space-x-2">
+                    <label key={source} className="check">
                       <input
                         type="checkbox"
                         checked={filters.sources?.includes(source) || false}
@@ -183,9 +180,9 @@ export default function Sidebar({
                             });
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className=""
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                      <span>
                         {source}
                       </span>
                     </label>
@@ -195,14 +192,14 @@ export default function Sidebar({
             </div>
 
             {/* Date Range */}
-            <div>
+            <div className="fieldset">
               <button
                 onClick={() => toggleSection('dateRange')}
-                className="flex items-center justify-between w-full text-left"
+                className="fieldset__legend"
               >
-                <div className="flex items-center space-x-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Calendar className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span style={{ fontWeight: 600 }}>
                     Date Range
                   </span>
                 </div>
@@ -214,27 +211,27 @@ export default function Sidebar({
               </button>
               
               {expandedSections.dateRange && (
-                <div className="mt-3 space-y-3">
+                <div className="stack" style={{ marginTop: 8 }}>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
                       From
                     </label>
                     <input
                       type="date"
                       value={filters.dateFrom || ''}
                       onChange={(e) => onFiltersChange({ dateFrom: e.target.value })}
-                      className="input text-sm"
+                      className="input"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
                       To
                     </label>
                     <input
                       type="date"
                       value={filters.dateTo || ''}
                       onChange={(e) => onFiltersChange({ dateTo: e.target.value })}
-                      className="input text-sm"
+                      className="input"
                     />
                   </div>
                 </div>
@@ -242,14 +239,14 @@ export default function Sidebar({
             </div>
 
             {/* Tags */}
-            <div>
+            <div className="fieldset">
               <button
                 onClick={() => toggleSection('tags')}
-                className="flex items-center justify-between w-full text-left"
+                className="fieldset__legend"
               >
-                <div className="flex items-center space-x-2">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Tag className="w-4 h-4 text-blue-600" />
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                  <span style={{ fontWeight: 600 }}>
                     Tags
                   </span>
                 </div>
@@ -261,9 +258,9 @@ export default function Sidebar({
               </button>
               
               {expandedSections.tags && (
-                <div className="mt-3 space-y-2">
+                <div className="stack-sm" style={{ marginTop: 8 }}>
                   {tags.map((tag) => (
-                    <label key={tag} className="flex items-center space-x-2">
+                    <label key={tag} className="check">
                       <input
                         type="checkbox"
                         checked={filters.tags?.includes(tag) || false}
@@ -279,9 +276,9 @@ export default function Sidebar({
                             });
                           }
                         }}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className=""
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
+                      <span>
                         {tag}
                       </span>
                     </label>
@@ -292,7 +289,7 @@ export default function Sidebar({
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="sidebar__footer">
             <button
               onClick={() => onFiltersChange({
                 search: '',
@@ -302,7 +299,7 @@ export default function Sidebar({
                 dateTo: '',
                 tags: []
               })}
-              className="w-full btn-secondary"
+              className="btn btn--secondary" style={{ width: '100%' }}
             >
               Clear All Filters
             </button>

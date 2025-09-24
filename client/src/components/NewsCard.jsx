@@ -53,21 +53,20 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
   };
 
   return (
-    <article className="card group hover:shadow-xl transition-all duration-300">
+    <article className="card group" style={{ padding: 16 }}>
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Image */}
         {item.imageUrl && (
-          <div className="lg:w-64 lg:flex-shrink-0">
-            <div className="relative overflow-hidden rounded-lg">
+          <div style={{ width: '100%' }}>
+            <div className="card__media">
               <img 
                 src={item.imageUrl} 
                 alt={item.title}
-                className="w-full h-48 lg:h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                className="card__img"
                 onError={(e) => {
                   e.target.style.display = 'none';
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           </div>
         )}
@@ -83,7 +82,7 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
                 rel="noreferrer"
                 className="block group/link"
               >
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 group-hover/link:text-blue-600 dark:group-hover/link:text-blue-400 transition-colors">
+                <h3 style={{ fontSize: 18, fontWeight: 700 }}>
                   {item.title}
                 </h3>
               </a>
@@ -110,38 +109,54 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
           </div>
 
           {/* Meta information */}
-          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-3">
-            <div className="flex items-center gap-1">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, color: 'var(--muted)', fontSize: 14, marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Newspaper className="w-3 h-3" />
-              <span className="font-medium">{item.source}</span>
+              <span style={{ fontWeight: 600 }}>{item.source}</span>
             </div>
             {item.author && (
-              <div className="flex items-center gap-1">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <User className="w-3 h-3" />
                 <span>{item.author}</span>
               </div>
             )}
-            <div className="flex items-center gap-1">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Clock className="w-3 h-3" />
               <span>{formatTime(item.publishedAt || item.createdAt)}</span>
             </div>
           </div>
 
           {/* Description */}
-          <p className="text-gray-600 dark:text-gray-300 line-clamp-3 mb-4">
+          <p style={{ color: 'var(--muted)', marginBottom: 16 }}>
             {item.description}
           </p>
 
           {/* Categories */}
           {item.categories && item.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {item.categories.slice(0, 3).map((category) => (
-                <span key={category} className="badge-category">
-                  {category}
-                </span>
-              ))}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+              {item.categories.slice(0, 3).map((category) => {
+                const normalized = String(category).toLowerCase();
+                const colorMap = {
+                  sports: 'badge badge--sports',
+                  technology: 'badge badge--technology',
+                  tech: 'badge badge--tech',
+                  politics: 'badge badge--politics',
+                  business: 'badge badge--business',
+                  entertainment: 'badge badge--entertainment',
+                  health: 'badge badge--health',
+                  science: 'badge badge--science',
+                  world: 'badge badge--world'
+                };
+                const fallback = 'badge badge--technology';
+                const badgeClass = colorMap[normalized] || fallback;
+                return (
+                  <span key={category} className={badgeClass}>
+                    {category}
+                  </span>
+                );
+              })}
               {item.categories.length > 3 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>
                   +{item.categories.length - 3} more
                 </span>
               )}
@@ -149,18 +164,18 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <a
               href={item.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm transition-colors"
+              className="nav-link"
             >
               Read full article
               <ExternalLink className="w-3 h-3" />
             </a>
             
-            <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+            <button className="icon-btn">
               <Share2 className="w-4 h-4" />
             </button>
           </div>

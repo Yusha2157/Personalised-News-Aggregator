@@ -9,6 +9,7 @@ import Saved from './pages/Saved.jsx';
 import Profile from './pages/Profile.jsx';
 import Trending from './pages/Trending.jsx';
 import ArticleDetails from './pages/ArticleDetails.jsx';
+import Footer from './components/Footer.jsx';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -29,6 +30,7 @@ function Layout({ children }) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
+      <Footer />
     </div>
   );
 }

@@ -80,6 +80,21 @@ export async function updateProfile(req, res) {
   res.json(safeUser(user));
 }
 
+export async function stats(req, res) {
+  if (!req.session.userId) return res.json({ savedArticles: 0, categories: [], joinDate: null });
+  const user = await User.findById(req.session.userId);
+  const savedCount = user?.savedArticles?.length || 0;
+  const categoriesSet = new Set();
+  for (const a of user?.savedArticles || []) {
+    for (const c of a.categories || []) categoriesSet.add(c);
+  }
+  res.json({
+    savedArticles: savedCount,
+    categories: Array.from(categoriesSet),
+    joinDate: user?.createdAt || null
+  });
+}
+
 function safeUser(user) {
   if (!user) return null;
   return {

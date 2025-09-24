@@ -2,13 +2,24 @@ const CATEGORIES = ['all', 'technology', 'sports', 'business', 'entertainment', 
 
 export default function CategoryTabs({ value, onChange, counts = {} }) {
   return (
-    <div className="tabs">
-      {CATEGORIES.map((c) => (
-        <button key={c} onClick={() => onChange(c)} className={`tab${value === c ? ' active' : ''}`}>
-          <span style={{ textTransform: 'capitalize' }}>{c}</span>
-          {counts[c] !== undefined ? <span style={{ marginLeft: 6, opacity: 0.9 }}>({counts[c]})</span> : null}
-        </button>
-      ))}
+    <div style={{ width: '100%', overflowX: 'auto' }}>
+      <div className="tabs">
+        {CATEGORIES.map((c) => {
+          const isActive = value === c;
+          return (
+            <button
+              key={c}
+              onClick={() => onChange(c)}
+              className={`tab ${isActive ? 'tab--active' : ''}`}
+            >
+              <span style={{ textTransform: 'capitalize' }}>{c}</span>
+              {counts[c] !== undefined && (
+                <span className="tab__count">({counts[c]})</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

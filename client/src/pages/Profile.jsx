@@ -84,59 +84,62 @@ export default function Profile() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="container" style={{ paddingTop: 0 }}>
+      <div className="stack-lg">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <h1 style={{ fontSize: 24, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}>
             <User className="w-6 h-6 text-blue-600" />
             Profile Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="muted" style={{ marginTop: 4 }}>
             Manage your account and preferences
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
+        <style>{`@media (min-width: 1024px){ .profile-grid { grid-template-columns: 2fr 1fr; } }`}</style>
+        <div className="profile-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
         {/* Profile Information */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="stack">
           {/* Basic Info */}
           <div className="card">
-            <div className="flex items-center gap-2 mb-6">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Settings className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3 style={{ fontSize: 18, fontWeight: 700 }}>
                 Basic Information
               </h3>
             </div>
 
             {/* Avatar Section */}
-            <div className="flex items-center gap-6 mb-6">
-              <div className="relative">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 16 }}>
+              <div style={{ position: 'relative' }}>
                 <img 
                   src={avatarUrl || `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(user?.name || user?.email)}`} 
                   alt="avatar" 
-                  className="w-20 h-20 rounded-full border-2 border-gray-200 dark:border-gray-700 object-cover"
+                  style={{ width: 150, height: 150, borderRadius: '999px', border: '2px solid var(--border)', objectFit: 'cover' }}
                 />
-                <button className="absolute -bottom-1 -right-1 p-1 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+                <button className="btn btn--primary" style={{ position: 'absolute', bottom: -6, right: -6, padding: 6, borderRadius: '999px' }}>
                   <Camera className="w-3 h-3" />
                 </button>
               </div>
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                <h4 style={{ fontSize: 18, fontWeight: 700 }}>
                   {name || user?.name || 'Unnamed User'}
                 </h4>
-                <p className="text-gray-600 dark:text-gray-400">{user?.email}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
+                <p className="muted">{user?.email}</p>
+                <p className="muted" style={{ fontSize: 12 }}>
                   Member since {formatDate(stats.joinDate)}
                 </p>
               </div>
             </div>
 
             {/* Form Fields */}
-            <div className="space-y-4">
+            <div className="stack">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
                   Full Name
                 </label>
                 <input
@@ -149,7 +152,7 @@ export default function Profile() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
                   Avatar URL
                 </label>
                 <input
@@ -162,19 +165,19 @@ export default function Profile() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
                   Email
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <div style={{ position: 'relative' }}>
+                  <Mail className="input-icon" />
                   <input
                     type="email"
                     value={user?.email || ''}
-                    className="input pl-10 bg-gray-50 dark:bg-gray-800"
+                    className="input input--with-icon"
                     disabled
                   />
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
                   Email cannot be changed
                 </p>
               </div>
@@ -182,16 +185,16 @@ export default function Profile() {
 
             {/* Success/Error Messages */}
             {success && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, borderColor: 'var(--success-100)' }}>
                 <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                <span className="text-green-700 dark:text-green-300 text-sm">{success}</span>
+                <span style={{ color: '#166534', fontSize: 14 }}>{success}</span>
               </div>
             )}
 
             {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, borderColor: 'var(--danger-100)' }}>
                 <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
+                <span style={{ color: '#b91c1c', fontSize: 14 }}>{error}</span>
               </div>
             )}
 
@@ -199,7 +202,8 @@ export default function Profile() {
             <button
               onClick={saveProfile}
               disabled={loading}
-              className="btn-primary flex items-center gap-2 mt-6"
+              className="btn btn--primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 16 }}
             >
               {loading ? (
                 <>
@@ -217,25 +221,26 @@ export default function Profile() {
 
           {/* Interests */}
           <div className="card">
-            <div className="flex items-center gap-2 mb-6">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
               <Tag className="w-5 h-5 text-blue-600" />
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3 style={{ fontSize: 18, fontWeight: 700 }}>
                 News Interests
               </h3>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
                 Topics you're interested in (comma separated)
               </label>
               <textarea
                 value={interests}
                 onChange={(e) => setInterests(e.target.value)}
-                className="input min-h-[100px] resize-none"
+                className="input"
+                style={{ minHeight: 100, resize: 'none' }}
                 placeholder="Technology, Science, Sports, Politics..."
                 rows={3}
               />
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              <p className="muted" style={{ fontSize: 12, marginTop: 4 }}>
                 Separate multiple interests with commas
               </p>
             </div>
@@ -243,7 +248,8 @@ export default function Profile() {
             <button
               onClick={save}
               disabled={loading}
-              className="btn-secondary flex items-center gap-2 mt-4"
+              className="btn btn--secondary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 16 }}
             >
               {loading ? (
                 <>
@@ -261,40 +267,40 @@ export default function Profile() {
         </div>
 
         {/* Stats Sidebar */}
-        <div className="space-y-6">
+        <div className="stack">
           {/* Account Stats */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
               Account Statistics
             </h3>
             
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+            <div className="stack">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Bookmark className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Saved Articles</span>
+                  <span className="muted" style={{ fontSize: 14 }}>Saved Articles</span>
                 </div>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                <span style={{ fontWeight: 700 }}>
                   {stats.savedArticles || 0}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Tag className="w-4 h-4 text-green-600" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Categories</span>
+                  <span className="muted" style={{ fontSize: 14 }}>Categories</span>
                 </div>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
+                <span style={{ fontWeight: 700 }}>
                   {stats.categories?.length || 0}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <Calendar className="w-4 h-4 text-purple-600" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Member Since</span>
+                  <span className="muted" style={{ fontSize: 14 }}>Member Since</span>
                 </div>
-                <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs">
+                <span style={{ fontWeight: 700, fontSize: 12 }}>
                   {formatDate(stats.joinDate)}
                 </span>
               </div>
@@ -303,27 +309,27 @@ export default function Profile() {
 
           {/* Quick Actions */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
               Quick Actions
             </h3>
             
-            <div className="space-y-3">
+            <div className="stack">
               <a
                 href="/saved"
-                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="card"
               >
                 <Bookmark className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <span style={{ fontSize: 14, fontWeight: 600 }}>
                   View Saved Articles
                 </span>
               </a>
 
               <a
                 href="/trending"
-                className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                className="card"
               >
                 <TrendingUp className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <span style={{ fontSize: 14, fontWeight: 600 }}>
                   View Analytics
                 </span>
               </a>
@@ -332,33 +338,35 @@ export default function Profile() {
 
           {/* Account Info */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
               Account Information
             </h3>
             
-            <div className="space-y-3 text-sm">
+            <div className="stack" style={{ fontSize: 14 }}>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">User ID:</span>
-                <span className="ml-2 font-mono text-gray-900 dark:text-gray-100">
+                <span className="muted">User ID:</span>
+                <span style={{ marginLeft: 8, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace' }}>
                   {user?.id?.slice(0, 8)}...
                 </span>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">Email:</span>
-                <span className="ml-2 text-gray-900 dark:text-gray-100">
+                <span className="muted">Email:</span>
+                <span style={{ marginLeft: 8 }}>
                   {user?.email}
                 </span>
               </div>
               <div>
-                <span className="text-gray-600 dark:text-gray-400">Status:</span>
-                <span className="ml-2 text-green-600 dark:text-green-400 font-medium">
+                <span className="muted">Status:</span>
+                <span style={{ marginLeft: 8, color: '#16a34a', fontWeight: 600 }}>
                   Active
                 </span>
               </div>
             </div>
           </div>
         </div>
+        </div>
       </div>
+    </div>
     </div>
   );
 }

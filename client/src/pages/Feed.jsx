@@ -12,7 +12,7 @@ import {
 
 export default function Feed() {
   const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -28,20 +28,25 @@ export default function Feed() {
   });
 
   const loadArticles = async (reset = false) => {
-    if (loading) return;
+    if (loading && !reset) return;
     
     setLoading(true);
     setError('');
     
     try {
       const currentPage = reset ? 1 : page;
-      const params = {
-        page: currentPage,
-        limit: 12,
-        ...filters
-      };
+      // Minimal server supports: GET /news/feed (uses user interests) and GET /news/search?q=&categories=
+      const hasSearch = (filters.search || '').trim().length > 0;
+      const hasCategories = (filters.categories || []).length > 0;
+      const endpoint = hasSearch || hasCategories ? '/news/search' : '/news/feed';
+      const params = hasSearch || hasCategories
+        ? {
+            q: filters.search || '',
+            categories: (filters.categories || []).join(','),
+          }
+        : {};
 
-      const { data } = await http.get('/news/feed', { params });
+      const { data } = await http.get(endpoint, { params });
       const newArticles = data.articles || [];
       
       if (reset) {
@@ -63,7 +68,8 @@ export default function Feed() {
 
   useEffect(() => {
     loadArticles(true);
-  }, [filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.search, JSON.stringify(filters.categories), filters.sources?.length, filters.dateFrom, filters.dateTo, JSON.stringify(filters.tags)]);
 
   const handleFiltersChange = (newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
@@ -87,7 +93,7 @@ export default function Feed() {
   };
 
   return (
-    <div className="flex gap-6">
+    <div style={{ display: 'flex', gap: 24 }}>
       {/* Sidebar */}
       <Sidebar 
         filters={filters}
@@ -97,23 +103,23 @@ export default function Feed() {
       />
 
       {/* Main Content */}
-      <div className="flex-1 min-w-0">
+      <div style={{ flex: 1, minWidth: 0 }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h1 style={{ fontSize: 24, fontWeight: 800 }}>
               News Feed
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="muted" style={{ marginTop: 4 }}>
               Stay updated with the latest news
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="btn-secondary flex items-center gap-2"
+              className="btn btn--secondary"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Refresh
@@ -121,7 +127,7 @@ export default function Feed() {
             
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="lg:hidden btn-secondary flex items-center gap-2"
+              className="btn btn--secondary"
             >
               <Filter className="w-4 h-4" />
               Filters
@@ -130,55 +136,55 @@ export default function Feed() {
         </div>
 
         {/* Search Bar */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ position: 'relative' }}>
+            <Search className="input-icon" />
             <input
               type="text"
               value={filters.search}
               onChange={(e) => handleFiltersChange({ search: e.target.value })}
               placeholder="Search articles..."
-              className="input pl-10"
+              className="input input--with-icon"
             />
           </div>
         </div>
 
         {/* Error State */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3">
+          <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 16, marginBottom: 24, borderColor: 'var(--danger-100)' }}>
             <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <span className="text-red-700 dark:text-red-300">{error}</span>
+            <span style={{ color: '#b91c1c' }}>{error}</span>
           </div>
         )}
 
         {/* Loading State */}
         {loading && articles.length === 0 && (
-          <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-              <span className="text-gray-600 dark:text-gray-400">Loading articles...</span>
+              <span className="muted">Loading articles...</span>
             </div>
           </div>
         )}
 
         {/* Articles Grid */}
         {!loading && articles.length === 0 && !error && (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+            <div style={{ width: 64, height: 64, background: 'var(--border)', borderRadius: 999, display: 'grid', placeItems: 'center', margin: '0 auto 1rem' }}>
               <Search className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+            <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
               No articles found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="muted">
               Try adjusting your filters or search terms
             </p>
           </div>
         )}
 
-        {/* Articles */}
+        {/* Articles Grid */}
         {articles.length > 0 && (
-          <div className="space-y-6">
+          <div className="grid-articles">
             {articles.map((article) => (
               <NewsCard 
                 key={article.id} 
@@ -192,11 +198,11 @@ export default function Feed() {
 
         {/* Load More Button */}
         {articles.length > 0 && hasMore && (
-          <div className="mt-8 text-center">
+          <div style={{ marginTop: 32, textAlign: 'center' }}>
             <button
               onClick={handleLoadMore}
               disabled={loading}
-              className="btn-primary flex items-center gap-2 mx-auto"
+              className="btn btn--primary"
             >
               {loading ? (
                 <>
@@ -212,8 +218,8 @@ export default function Feed() {
 
         {/* End of Results */}
         {articles.length > 0 && !hasMore && (
-          <div className="mt-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400">
+          <div style={{ marginTop: 32, textAlign: 'center' }}>
+            <p className="muted">
               You've reached the end of the articles
             </p>
           </div>
