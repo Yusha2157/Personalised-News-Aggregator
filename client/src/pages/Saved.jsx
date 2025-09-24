@@ -84,7 +84,7 @@ export default function Saved() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="stack">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -108,14 +108,14 @@ export default function Saved() {
       </div>
 
       {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <div className="searchbar" style={{ position: 'relative' }}>
+        <Search className="input-icon" />
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search saved articles..."
-          className="input pl-10"
+          className="input input--with-icon"
         />
       </div>
 
@@ -157,25 +157,23 @@ export default function Saved() {
 
       {/* Articles List */}
       {filteredItems.length > 0 && (
-        <div className="space-y-6">
+        <div className="list">
           {filteredItems.map((article) => (
-            <div key={article.id} className="relative group">
-              <NewsCard 
-                item={article} 
-                onRemove={remove} 
-                saved={true}
-                showSaveButton={false}
-              />
-              
-              {/* Remove Button */}
-              <button
-                onClick={() => remove(article.id)}
-                className="absolute top-4 right-4 p-2 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-200 dark:hover:bg-red-900/40"
-                title="Remove from saved"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
+            <details key={article.id} className="list-item">
+              <summary className="row-between">
+                <a href={article.url} target="_blank" rel="noreferrer" className="headline">{article.title}</a>
+                <button type="button" onClick={(e) => { e.preventDefault(); remove(article.id); }} className="btn btn--secondary" title="Remove">
+                  Remove
+                </button>
+              </summary>
+              <div className="stack" style={{ marginTop: 12 }}>
+                <div className="meta">
+                  <span>{article.source}</span>
+                  {article.author && <span>• {article.author}</span>}
+                </div>
+                <p className="muted" style={{ margin: 0 }}>{article.description}</p>
+              </div>
+            </details>
           ))}
         </div>
       )}

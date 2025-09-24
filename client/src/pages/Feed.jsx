@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { http } from '../api/http.js';
 import NewsCard from '../components/NewsCard.jsx';
+import CategoryTabs from '../components/CategoryTabs.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { 
   Filter, 
@@ -75,6 +76,14 @@ export default function Feed() {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
+  const handleCategoryChange = (category) => {
+    if (category === 'all') {
+      setFilters(prev => ({ ...prev, categories: [] }));
+    } else {
+      setFilters(prev => ({ ...prev, categories: [category] }));
+    }
+  };
+
   const handleLoadMore = () => {
     loadArticles(false);
   };
@@ -135,9 +144,14 @@ export default function Feed() {
           </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Filters + Search */}
         <div style={{ marginBottom: 24 }}>
-          <div style={{ position: 'relative' }}>
+          <div className="stack">
+            <CategoryTabs
+              value={(filters.categories[0] || 'all')}
+              onChange={handleCategoryChange}
+            />
+            <div className="searchbar" style={{ position: 'relative' }}>
             <Search className="input-icon" />
             <input
               type="text"
@@ -146,6 +160,7 @@ export default function Feed() {
               placeholder="Search articles..."
               className="input input--with-icon"
             />
+            </div>
           </div>
         </div>
 
