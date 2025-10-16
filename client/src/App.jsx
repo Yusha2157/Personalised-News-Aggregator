@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './auth/AuthContext.jsx';
 import { ThemeProvider } from './contexts/ThemeContext.jsx';
 import Navbar from './components/Navbar.jsx';
@@ -10,6 +11,7 @@ import Profile from './pages/Profile.jsx';
 import Trending from './pages/Trending.jsx';
 import ArticleDetails from './pages/ArticleDetails.jsx';
 import Footer from './components/Footer.jsx';
+import Chatbot from './components/Chatbot.jsx';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -27,8 +29,10 @@ function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+      <main style={{ paddingTop: '80px' }}>
+        <div style={{ maxWidth: '80rem', margin: '0 auto', padding: '2rem 1rem' }}>
+          {children}
+        </div>
       </main>
       <Footer />
     </div>
@@ -107,6 +111,18 @@ export default function App() {
             } 
           />
         </Routes>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: 'var(--bg)',
+              color: 'var(--text)',
+              border: '1px solid var(--border)',
+            },
+          }}
+        />
+        <Chatbot />
       </AuthProvider>
     </ThemeProvider>
   );

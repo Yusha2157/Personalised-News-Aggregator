@@ -3,10 +3,12 @@ import {
   ExternalLink, 
   User,
   Clock,
-  Share2
+  Share2,
+  Bookmark,
+  BookmarkCheck
 } from 'lucide-react';
 
-export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton = true }) {
+export default function NewsCard({ item, onSave, onUnsave, saved, showSaveButton = true }) {
   const [isBookmarked, setIsBookmarked] = useState(saved || false);
   const [isSaving, setIsSaving] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -17,10 +19,10 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
     setIsSaving(true);
     try {
       if (isBookmarked) {
-        await onRemove?.(item.id);
+        await onUnsave?.(item._id);
         setIsBookmarked(false);
       } else {
-        await onSave?.(item);
+        await onSave?.(item._id);
         setIsBookmarked(true);
       }
     } catch (error) {
@@ -57,12 +59,26 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
             {item.title}
           </a>
           <div className="row">
-            {item.categories?.slice(0, 1).map((c) => (
-              <span key={c} className="pill">{c}</span>
-            ))}
+            {item.category && (
+              <span className="pill">{item.category}</span>
+            )}
             {showSaveButton && (
-              <button onClick={handleSave} disabled={isSaving} className="btn btn--secondary">
-                {isBookmarked ? 'Saved' : 'Save'}
+              <button 
+                onClick={handleSave} 
+                disabled={isSaving} 
+                className={`btn btn--secondary ${isBookmarked ? 'saved' : ''}`}
+              >
+                {isBookmarked ? (
+                  <>
+                    <BookmarkCheck className="w-4 h-4" />
+                    Saved
+                  </>
+                ) : (
+                  <>
+                    <Bookmark className="w-4 h-4" />
+                    Save
+                  </>
+                )}
               </button>
             )}
           </div>
@@ -71,15 +87,24 @@ export default function NewsCard({ item, onSave, onRemove, saved, showSaveButton
           <p className="clamp-3 muted" style={{ margin: 0 }}>{item.description}</p>
         )}
         <div className="meta">
-          <span>{item.source}</span>
+          <span>{item.source?.name || item.source}</span>
           {item.author && <span>• {item.author}</span>}
           <span>• {formatTime(item.publishedAt || item.createdAt)}</span>
         </div>
         {expanded && (
           <div className="stack">
-            {item.imageUrl && (
+            {item.urlToImage && (
               <div className="card__media">
-                <img src={item.imageUrl} alt={item.title} className="card__img" />
+                <img src={item.urlToImage} alt={item.title} className="card__img" />
+              </div>
+            )}
+            {item.tags && item.tags.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {item.tags.slice(0, 5).map((tag) => (
+                  <span key={tag} style={{ fontSize: '12px', background: 'var(--border)', padding: '0.25rem 0.5rem', borderRadius: '4px' }}>
+                    #{tag}
+                  </span>
+                ))}
               </div>
             )}
             <div className="row-between">

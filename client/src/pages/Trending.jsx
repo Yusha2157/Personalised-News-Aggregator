@@ -77,10 +77,10 @@ export default function Trending() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-gray-600 dark:text-gray-400">Loading trending data...</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--primary)' }} />
+          <span className="muted">Loading trending data...</span>
         </div>
       </div>
     );
@@ -88,14 +88,14 @@ export default function Trending() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 0' }}>
+        <div style={{ textAlign: 'center' }}>
+          <AlertCircle className="w-12 h-12" style={{ color: 'var(--danger)', margin: '0 auto 1rem' }} />
+          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: 'var(--fg)' }}>
             Error loading data
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button onClick={loadStats} className="btn-primary">
+          <p className="muted" style={{ marginBottom: 16 }}>{error}</p>
+          <button onClick={loadStats} className="btn btn--primary">
             Try Again
           </button>
         </div>
@@ -104,21 +104,21 @@ export default function Trending() {
   }
 
   return (
-    <div className="space-y-8">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-blue-600" />
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <TrendingUp className="w-6 h-6" style={{ color: 'var(--primary)' }} />
             Trending Analytics
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="muted" style={{ marginTop: 4 }}>
             Insights into popular content and user engagement
           </p>
         </div>
         
-        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-1">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 14, color: 'var(--muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <Calendar className="w-4 h-4" />
             <span>Last updated: {new Date().toLocaleDateString()}</span>
           </div>
@@ -126,63 +126,63 @@ export default function Trending() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 24 }}>
         <div className="card">
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Articles</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted)' }}>Total Articles</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {stats.totalArticles?.toLocaleString() || 0}
               </p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-              <Newspaper className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div style={{ width: 48, height: 48, background: 'var(--primary-100)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Newspaper className="w-6 h-6" style={{ color: 'var(--primary)' }} />
             </div>
           </div>
         </div>
 
         <div className="card">
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted)' }}>Active Users</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {stats.totalUsers?.toLocaleString() || 0}
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-              <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div style={{ width: 48, height: 48, background: 'var(--success-100)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users className="w-6 h-6" style={{ color: 'var(--success)' }} />
             </div>
           </div>
         </div>
 
         <div className="card">
-          <div className="flex items-center justify-between">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Trending Today</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted)' }}>Trending Today</p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {stats.trendingToday?.length || 0}
               </p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div style={{ width: 48, height: 48, background: 'var(--warning-100)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <TrendingUp className="w-6 h-6" style={{ color: 'var(--warning)' }} />
             </div>
           </div>
         </div>
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 24 }}>
         {/* Categories Pie Chart */}
         <div className="card">
-          <div className="flex items-center gap-2 mb-6">
-            <PieChart className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <PieChart className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)' }}>
               Articles by Category
             </h3>
           </div>
           
           {stats.categories && stats.categories.length > 0 ? (
-            <div className="h-80">
+            <div style={{ height: 320 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart>
                   <Pie
@@ -204,7 +204,7 @@ export default function Trending() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-80 flex items-center justify-center text-gray-500 dark:text-gray-400">
+            <div style={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)' }}>
               No category data available
             </div>
           )}
@@ -212,15 +212,15 @@ export default function Trending() {
 
         {/* Sources Bar Chart */}
         <div className="card">
-          <div className="flex items-center gap-2 mb-6">
-            <BarChart3 className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <BarChart3 className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)' }}>
               Articles by Source
             </h3>
           </div>
           
           {stats.sources && stats.sources.length > 0 ? (
-            <div className="h-80">
+            <div style={{ height: 320 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.sources}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -238,7 +238,7 @@ export default function Trending() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="h-80 flex items-center justify-center text-gray-500 dark:text-gray-400">
+            <div style={{ height: 320, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted)' }}>
               No source data available
             </div>
           )}
@@ -248,31 +248,31 @@ export default function Trending() {
       {/* Trending Articles */}
       {stats.trendingToday && stats.trendingToday.length > 0 && (
         <div className="card">
-          <div className="flex items-center gap-2 mb-6">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <TrendingUp className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)' }}>
               Trending Today
             </h3>
           </div>
           
-          <div className="space-y-4">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {stats.trendingToday.map((article, index) => (
-              <div key={article.id} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                  <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+              <div key={article.id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, background: 'var(--border)', borderRadius: 12 }}>
+                <div style={{ flexShrink: 0, width: 32, height: 32, background: 'var(--primary-100)', borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary)' }}>
                     {index + 1}
                   </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h4 style={{ fontWeight: 600, color: 'var(--fg)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {article.title}
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p style={{ fontSize: 14, color: 'var(--muted)' }}>
                     {article.source} • {article.views || 0} views
                   </p>
                 </div>
-                <div className="flex-shrink-0">
-                  <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                <div style={{ flexShrink: 0 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--success)' }}>
                     +{article.trendScore || 0}%
                   </span>
                 </div>
@@ -285,18 +285,18 @@ export default function Trending() {
       {/* Tags Cloud */}
       {stats.tags && stats.tags.length > 0 && (
         <div className="card">
-          <div className="flex items-center gap-2 mb-6">
-            <Tag className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+            <Tag className="w-5 h-5" style={{ color: 'var(--primary)' }} />
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg)' }}>
               Popular Tags
             </h3>
           </div>
           
-          <div className="flex flex-wrap gap-2">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {stats.tags.map((tag, index) => (
               <span
                 key={tag.name}
-                className="badge-category"
+                className="pill"
                 style={{
                   fontSize: `${Math.max(12, Math.min(20, tag.count * 2))}px`,
                   opacity: Math.max(0.6, Math.min(1, tag.count / 10))
