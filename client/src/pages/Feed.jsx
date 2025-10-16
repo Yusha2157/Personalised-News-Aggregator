@@ -1,32 +1,52 @@
-import { useEffect, useState } from 'react';
-import { http } from '../api/http.js';
+import { useEffect, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { articlesAPI } from '../api/articles.js';
+import { liveNewsAPI } from '../api/liveNewsAPI.js';
+import { useAuth } from '../auth/AuthContext.jsx';
 import NewsCard from '../components/NewsCard.jsx';
 import CategoryTabs from '../components/CategoryTabs.jsx';
-import Sidebar from '../components/Sidebar.jsx';
 import { 
   Filter, 
   Search, 
   Loader2,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 
 export default function Feed() {
+  const { saveArticle, unsaveArticle } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [useLiveNews, setUseLiveNews] = useState(true);
+  const [liveNewsStatus, setLiveNewsStatus] = useState('online');
   
   const [filters, setFilters] = useState({
     search: '',
-    categories: [],
-    sources: [],
+    category: searchParams.get('category') || '',
+    country: searchParams.get('country') || '',
+    tags: '',
     dateFrom: '',
     dateTo: '',
-    tags: []
+    sortBy: 'publishedAt',
+    sortOrder: 'desc'
   });
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setFilters(prev => ({ ...prev, search: searchQuery }));
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   const loadArticles = async (reset = false) => {
     if (loading && !reset) return;
@@ -35,133 +55,199 @@ export default function Feed() {
     setError('');
     
     try {
-      const currentPage = reset ? 1 : page;
-      // Minimal server supports: GET /news/feed (uses user interests) and GET /news/search?q=&categories=
-      const hasSearch = (filters.search || '').trim().length > 0;
-      const hasCategories = (filters.categories || []).length > 0;
-      const endpoint = hasSearch || hasCategories ? '/news/search' : '/news/feed';
-      const params = hasSearch || hasCategories
-        ? {
-            q: filters.search || '',
-            categories: (filters.categories || []).join(','),
-          }
-        : {};
-
-      const { data } = await http.get(endpoint, { params });
-      const newArticles = data.articles || [];
-      
-      if (reset) {
-        setArticles(newArticles);
-        setPage(2);
+      if (useLiveNews) {
+        await loadLiveNews(reset);
       } else {
-        setArticles(prev => [...prev, ...newArticles]);
-        setPage(prev => prev + 1);
+        await loadLocalNews(reset);
       }
-      
-      setHasMore(newArticles.length === 12);
-    } catch (e) {
-      setError('Failed to load articles');
-      console.error('Error loading articles:', e);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load articles');
+      setLiveNewsStatus('offline');
     } finally {
       setLoading(false);
     }
   };
 
+  const loadLiveNews = async (reset = false) => {
+    try {
+      const params = {
+        category: filters.category || 'general',
+        query: filters.search,
+        limit: 50,
+        useCache: true
+      };
+
+      const response = await liveNewsAPI.getLiveNews(params);
+      
+      if (response.success) {
+        const newArticles = response.data.articles || [];
+        
+        if (reset) {
+          setArticles(newArticles);
+        } else {
+          setArticles(prev => [...prev, ...newArticles]);
+        }
+        
+        setHasMore(false); // Live news doesn't use pagination
+        setLiveNewsStatus('online');
+      } else {
+        throw new Error(response.message || 'Failed to fetch live news');
+      }
+    } catch (error) {
+      console.error('Live news fetch failed, falling back to local:', error);
+      setLiveNewsStatus('offline');
+      // Fallback to local news
+      await loadLocalNews(reset);
+    }
+  };
+
+  const loadLocalNews = async (reset = false) => {
+    const currentPage = reset ? 1 : page;
+    const params = {
+      page: currentPage,
+      limit: 12,
+      q: filters.search,
+      category: filters.category,
+      tags: filters.tags,
+      from: filters.dateFrom,
+      to: filters.dateTo,
+      sort: filters.sortBy,
+      order: filters.sortOrder
+    };
+
+    const data = await articlesAPI.getArticles(params);
+    const newArticles = data.items || [];
+    
+    if (reset) {
+      setArticles(newArticles);
+      setPage(2);
+    } else {
+      setArticles(prev => [...prev, ...newArticles]);
+      setPage(prev => prev + 1);
+    }
+    
+    setPagination(data.meta);
+    setHasMore(data.meta?.hasNextPage || false);
+  };
+
+  // Update filters when URL params change
+  useEffect(() => {
+    const category = searchParams.get('category') || '';
+    const country = searchParams.get('country') || '';
+    setFilters(prev => ({ ...prev, category, country }));
+  }, [searchParams]);
+
   useEffect(() => {
     loadArticles(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.search, JSON.stringify(filters.categories), filters.sources?.length, filters.dateFrom, filters.dateTo, JSON.stringify(filters.tags)]);
+  }, [filters.search, filters.category, filters.country, filters.tags, filters.dateFrom, filters.dateTo, filters.sortBy, filters.sortOrder]);
 
   const handleFiltersChange = (newFilters) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   const handleCategoryChange = (category) => {
-    if (category === 'all') {
-      setFilters(prev => ({ ...prev, categories: [] }));
-    } else {
-      setFilters(prev => ({ ...prev, categories: [category] }));
-    }
+    setFilters(prev => ({ ...prev, category: category === 'all' ? '' : category }));
   };
 
   const handleLoadMore = () => {
     loadArticles(false);
   };
 
-  const handleRefresh = () => {
-    loadArticles(true);
+  const handleRefresh = async () => {
+    setLoading(true);
+    setError('');
+    setPage(1);
+    setHasMore(true);
+    setArticles([]);
+    await loadArticles(true);
   };
 
-  const save = async (item) => {
+  const handleSaveArticle = async (articleId) => {
     try {
-      await http.post('/news/save', item);
-      // You could add a toast notification here
+      await saveArticle(articleId);
     } catch (e) {
       console.error('Error saving article:', e);
     }
   };
 
-  return (
-    <div style={{ display: 'flex', gap: 24 }}>
-      {/* Sidebar */}
-      <Sidebar 
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-        isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-      />
+  const handleUnsaveArticle = async (articleId) => {
+    try {
+      await unsaveArticle(articleId);
+    } catch (e) {
+      console.error('Error unsaving article:', e);
+    }
+  };
 
-      {/* Main Content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 800 }}>
-              News Feed
-            </h1>
-            <p className="muted" style={{ marginTop: 4 }}>
-              Stay updated with the latest news
-            </p>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+  return (
+    <div>
+        {/* Search Bar */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="searchbar" style={{ position: 'relative', maxWidth: 600, flex: 1, minWidth: 300 }}>
+              <Search className="input-icon" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={useLiveNews ? "Search live news..." : "Search articles..."}
+                className="input input--with-icon"
+              />
+            </div>
+            
+            {/* Live News Toggle */}
+            <button
+              onClick={() => {
+                setUseLiveNews(!useLiveNews);
+                setLiveNewsStatus('online');
+                handleRefresh();
+              }}
+              className={`btn ${useLiveNews ? 'btn--primary' : 'btn--secondary'}`}
+              style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+            >
+              {liveNewsStatus === 'online' ? (
+                <Wifi className="w-4 h-4" />
+              ) : (
+                <WifiOff className="w-4 h-4" />
+              )}
+              {useLiveNews ? 'Live News' : 'Local News'}
+            </button>
+            
             <button
               onClick={handleRefresh}
               disabled={loading}
               className="btn btn--secondary"
+              style={{ display: 'flex', alignItems: 'center', gap: 8 }}
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </button>
-            
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="btn btn--secondary"
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
           </div>
+          
+          {/* Status Indicator */}
+          {useLiveNews && (
+            <div style={{ textAlign: 'center', marginTop: 8, fontSize: 14 }}>
+              {liveNewsStatus === 'online' ? (
+                <span style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <Wifi className="w-4 h-4" />
+                  Fetching live news from multiple sources
+                </span>
+              ) : (
+                <span style={{ color: 'var(--warning)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <WifiOff className="w-4 h-4" />
+                  Live news unavailable, showing local articles
+                </span>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Filters + Search */}
-        <div style={{ marginBottom: 24 }}>
-          <div className="stack">
-            <CategoryTabs
-              value={(filters.categories[0] || 'all')}
-              onChange={handleCategoryChange}
-            />
-            <div className="searchbar" style={{ position: 'relative' }}>
-            <Search className="input-icon" />
-            <input
-              type="text"
-              value={filters.search}
-              onChange={(e) => handleFiltersChange({ search: e.target.value })}
-              placeholder="Search articles..."
-              className="input input--with-icon"
-            />
-            </div>
-          </div>
+        {/* Category Tabs */}
+        <div style={{ marginBottom: 32 }}>
+          <CategoryTabs
+            value={filters.category || 'all'}
+            onChange={handleCategoryChange}
+          />
         </div>
 
         {/* Error State */}
@@ -202,9 +288,10 @@ export default function Feed() {
           <div className="grid-articles">
             {articles.map((article) => (
               <NewsCard 
-                key={article.id} 
+                key={article._id} 
                 item={article} 
-                onSave={save}
+                onSave={handleSaveArticle}
+                onUnsave={handleUnsaveArticle}
                 showSaveButton={true}
               />
             ))}
@@ -239,7 +326,6 @@ export default function Feed() {
             </p>
           </div>
         )}
-      </div>
     </div>
   );
 }

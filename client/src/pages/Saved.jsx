@@ -57,10 +57,10 @@ export default function Saved() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex items-center gap-3">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          <span className="text-gray-600 dark:text-gray-400">Loading saved articles...</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--primary)' }} />
+          <span className="muted">Loading saved articles...</span>
         </div>
       </div>
     );
@@ -68,14 +68,14 @@ export default function Saved() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '3rem 0' }}>
+        <div style={{ textAlign: 'center' }}>
+          <AlertCircle className="w-12 h-12" style={{ color: 'var(--danger)', margin: '0 auto 1rem' }} />
+          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8, color: 'var(--fg)' }}>
             Error loading articles
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-          <button onClick={handleRefresh} className="btn-primary">
+          <p className="muted" style={{ marginBottom: 16 }}>{error}</p>
+          <button onClick={handleRefresh} className="btn btn--primary">
             Try Again
           </button>
         </div>
@@ -84,15 +84,15 @@ export default function Saved() {
   }
 
   return (
-    <div className="stack">
+    <div>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Bookmark className="w-6 h-6 text-blue-600" />
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Bookmark className="w-6 h-6" style={{ color: 'var(--primary)' }} />
             Saved Articles
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="muted" style={{ marginTop: 4 }}>
             {items.length} {items.length === 1 ? 'article' : 'articles'} saved
           </p>
         </div>
@@ -100,7 +100,7 @@ export default function Saved() {
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="btn-secondary flex items-center gap-2"
+          className="btn btn--secondary"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Refresh
@@ -108,33 +108,32 @@ export default function Saved() {
       </div>
 
       {/* Search Bar */}
-      <div className="searchbar" style={{ position: 'relative' }}>
-        <Search className="input-icon" />
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search saved articles..."
-          className="input input--with-icon"
-        />
+      <div style={{ marginBottom: 24 }}>
+        <div className="searchbar" style={{ position: 'relative', maxWidth: 600 }}>
+          <Search className="input-icon" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search saved articles..."
+            className="input input--with-icon"
+          />
+        </div>
       </div>
 
       {/* Empty State */}
       {items.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Bookmark className="w-8 h-8 text-gray-400" />
+        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+          <div style={{ width: 64, height: 64, background: 'var(--border)', borderRadius: 999, display: 'grid', placeItems: 'center', margin: '0 auto 1rem' }}>
+            <Bookmark className="w-8 h-8" style={{ color: 'var(--muted)' }} />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             No saved articles yet
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="muted" style={{ marginBottom: 16 }}>
             Start saving articles from your feed to see them here
           </p>
-          <a
-            href="/"
-            className="btn-primary"
-          >
+          <a href="/" className="btn btn--primary">
             Browse Articles
           </a>
         </div>
@@ -142,67 +141,87 @@ export default function Saved() {
 
       {/* No Search Results */}
       {items.length > 0 && filteredItems.length === 0 && searchTerm && (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="w-8 h-8 text-gray-400" />
+        <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+          <div style={{ width: 64, height: 64, background: 'var(--border)', borderRadius: 999, display: 'grid', placeItems: 'center', margin: '0 auto 1rem' }}>
+            <Search className="w-8 h-8" style={{ color: 'var(--muted)' }} />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>
             No articles found
           </h3>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="muted">
             Try adjusting your search terms
           </p>
         </div>
       )}
 
-      {/* Articles List */}
+      {/* Articles Grid */}
       {filteredItems.length > 0 && (
-        <div className="list">
+        <div className="grid-articles">
           {filteredItems.map((article) => (
-            <details key={article.id} className="list-item">
-              <summary className="row-between">
-                <a href={article.url} target="_blank" rel="noreferrer" className="headline">{article.title}</a>
-                <button type="button" onClick={(e) => { e.preventDefault(); remove(article.id); }} className="btn btn--secondary" title="Remove">
-                  Remove
-                </button>
-              </summary>
-              <div className="stack" style={{ marginTop: 12 }}>
-                <div className="meta">
+            <div key={article.id} className="card">
+              <div className="card__media">
+                <img 
+                  src={article.urlToImage || '/placeholder-image.jpg'} 
+                  alt={article.title}
+                  className="card__img"
+                />
+              </div>
+              <div style={{ padding: '1rem' }}>
+                <a href={article.url} target="_blank" rel="noreferrer" className="headline">
+                  {article.title}
+                </a>
+                <p className="clamp-3" style={{ margin: '0.5rem 0' }}>
+                  {article.description}
+                </p>
+                <div className="meta" style={{ marginTop: '0.75rem' }}>
                   <span>{article.source}</span>
                   {article.author && <span>• {article.author}</span>}
+                  <span>• {new Date(article.publishedAt).toLocaleDateString()}</span>
                 </div>
-                <p className="muted" style={{ margin: 0 }}>{article.description}</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem' }}>
+                  <span className="pill" style={{ textTransform: 'capitalize' }}>
+                    {article.category || 'general'}
+                  </span>
+                  <button 
+                    type="button" 
+                    onClick={() => remove(article.id)} 
+                    className="btn btn--secondary" 
+                    style={{ padding: '0.25rem 0.5rem', fontSize: '12px' }}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-            </details>
+            </div>
           ))}
         </div>
       )}
 
       {/* Stats */}
       {items.length > 0 && (
-        <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+        <div style={{ marginTop: 32, padding: '1rem', background: 'var(--border)', borderRadius: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '1rem', textAlign: 'center' }}>
             <div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {items.length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="muted">
                 Total Saved
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {new Set(items.map(item => item.source)).size}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="muted">
                 Sources
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--fg)' }}>
                 {new Set(items.flatMap(item => item.categories || [])).size}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="muted">
                 Categories
               </div>
             </div>

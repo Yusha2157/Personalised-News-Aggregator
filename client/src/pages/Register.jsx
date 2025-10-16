@@ -46,16 +46,17 @@ export default function Register() {
       await register(form);
       navigate('/');
     } catch (e) {
-      setError(e?.response?.data?.error || 'Registration failed');
+      const errorMessage = e?.response?.data?.error?.message || e?.response?.data?.message || e?.response?.data?.error || 'Registration failed';
+      setError(typeof errorMessage === 'string' ? errorMessage : 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
   const getPasswordStrengthColor = (strength) => {
-    if (strength < 2) return 'bg-red-500';
-    if (strength < 4) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (strength < 2) return 'var(--danger-800)';
+    if (strength < 4) return 'var(--warn-800)';
+    return 'var(--success-800)';
   };
 
   const getPasswordStrengthText = (strength) => {
@@ -65,37 +66,37 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
       {/* Logo */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-2xl">N</span>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div className="brand__logo" style={{ width: '64px', height: '64px', fontSize: '24px', margin: '0 auto 1rem' }}>
+          N
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--fg)', marginBottom: '0.5rem' }}>
           Create your account
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p style={{ color: 'var(--muted)' }}>
           Join thousands of users getting personalized news
         </p>
       </div>
 
       {/* Register Form */}
       <div className="card">
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="stack">
           {/* Name Field */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="fieldset">
+            <label htmlFor="name" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--fg)' }}>
               Full name
             </label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div style={{ position: 'relative' }}>
+              <User className="input-icon" />
               <input
                 id="name"
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="Enter your full name"
-                className="input pl-10"
+                className="input input--with-icon"
                 required
                 disabled={loading}
               />
@@ -103,19 +104,19 @@ export default function Register() {
           </div>
 
           {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="fieldset">
+            <label htmlFor="email" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--fg)' }}>
               Email address
             </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div style={{ position: 'relative' }}>
+              <Mail className="input-icon" />
               <input
                 id="email"
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="Enter your email"
-                className="input pl-10"
+                className="input input--with-icon"
                 required
                 disabled={loading}
               />
@@ -123,51 +124,54 @@ export default function Register() {
           </div>
 
           {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="fieldset">
+            <label htmlFor="password" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--fg)' }}>
               Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div style={{ position: 'relative' }}>
+              <Lock className="input-icon" />
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={form.password}
                 onChange={(e) => handlePasswordChange(e.target.value)}
                 placeholder="Create a strong password"
-                className="input pl-10 pr-10"
+                className="input input--with-icon"
+                style={{ paddingRight: '2.5rem' }}
                 required
                 disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="icon-btn"
+                style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}
                 disabled={loading}
               >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             
             {/* Password Strength Indicator */}
             {form.password && (
-              <div className="mt-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div style={{ marginTop: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <div style={{ flex: 1, background: 'var(--border)', borderRadius: '999px', height: '8px' }}>
                     <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${getPasswordStrengthColor(passwordStrength)}`}
-                      style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                      style={{ 
+                        height: '8px', 
+                        borderRadius: '999px', 
+                        background: getPasswordStrengthColor(passwordStrength),
+                        width: `${(passwordStrength / 5) * 100}%`,
+                        transition: 'all 0.3s ease'
+                      }}
                     />
                   </div>
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                  <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--muted)' }}>
                     {getPasswordStrengthText(passwordStrength)}
                   </span>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div style={{ fontSize: '12px', color: 'var(--muted)' }}>
                   Password should be at least 8 characters with uppercase, lowercase, and numbers
                 </div>
               </div>
@@ -176,30 +180,35 @@ export default function Register() {
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              padding: '0.75rem', 
+              background: 'var(--danger-100)', 
+              border: '1px solid var(--danger-800)', 
+              borderRadius: '10px' 
+            }}>
+              <AlertCircle size={20} style={{ color: 'var(--danger-800)' }} />
+              <span style={{ color: 'var(--danger-800)', fontSize: '14px' }}>{error}</span>
             </div>
           )}
 
           {/* Terms and Conditions */}
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0">
-              <input
-                type="checkbox"
-                id="terms"
-                required
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                disabled={loading}
-              />
-            </div>
-            <label htmlFor="terms" className="text-sm text-gray-600 dark:text-gray-400">
+          <div className="check">
+            <input
+              type="checkbox"
+              id="terms"
+              required
+              disabled={loading}
+            />
+            <label htmlFor="terms" style={{ fontSize: '14px', color: 'var(--muted)' }}>
               I agree to the{' '}
-              <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">
+              <a href="#" style={{ color: 'var(--primary-500)', textDecoration: 'none' }}>
                 Terms of Service
               </a>{' '}
               and{' '}
-              <a href="#" className="text-blue-600 dark:text-blue-400 hover:underline">
+              <a href="#" style={{ color: 'var(--primary-500)', textDecoration: 'none' }}>
                 Privacy Policy
               </a>
             </label>
@@ -209,29 +218,39 @@ export default function Register() {
           <button
             type="submit"
             disabled={loading || passwordStrength < 2}
-            className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn--primary"
+            style={{ 
+              width: '100%', 
+              gap: '0.5rem',
+              opacity: loading || passwordStrength < 2 ? 0.5 : 1,
+              cursor: loading || passwordStrength < 2 ? 'not-allowed' : 'pointer'
+            }}
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
                 Creating account...
               </>
             ) : (
               <>
                 Create account
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight size={16} />
               </>
             )}
           </button>
         </form>
 
         {/* Login Link */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--muted)' }}>
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              style={{ 
+                color: 'var(--primary-500)', 
+                fontWeight: '600',
+                textDecoration: 'none'
+              }}
             >
               Sign in here
             </Link>
@@ -240,17 +259,17 @@ export default function Register() {
       </div>
 
       {/* Features */}
-      <div className="mt-8 grid grid-cols-1 gap-4">
-        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-          <CheckCircle className="w-5 h-5 text-green-500" />
+      <div style={{ marginTop: '2rem', display: 'grid', gap: '1rem' }}>
+        <div className="row" style={{ fontSize: '14px', color: 'var(--muted)' }}>
+          <CheckCircle size={20} style={{ color: 'var(--success-800)' }} />
           <span>Personalized news feed</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-          <CheckCircle className="w-5 h-5 text-green-500" />
+        <div className="row" style={{ fontSize: '14px', color: 'var(--muted)' }}>
+          <CheckCircle size={20} style={{ color: 'var(--success-800)' }} />
           <span>Save articles for later</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-          <CheckCircle className="w-5 h-5 text-green-500" />
+        <div className="row" style={{ fontSize: '14px', color: 'var(--muted)' }}>
+          <CheckCircle size={20} style={{ color: 'var(--success-800)' }} />
           <span>Trending analytics</span>
         </div>
       </div>

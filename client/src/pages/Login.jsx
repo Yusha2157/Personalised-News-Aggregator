@@ -29,44 +29,45 @@ export default function Login() {
       await login(email, password);
       navigate('/');
     } catch (e) {
-      setError(e?.response?.data?.error || 'Login failed');
+      const errorMessage = e?.response?.data?.error?.message || e?.response?.data?.message || e?.response?.data?.error || 'Login failed';
+      setError(typeof errorMessage === 'string' ? errorMessage : 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
       {/* Logo */}
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <span className="text-white font-bold text-2xl">N</span>
+      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div className="brand__logo" style={{ width: '64px', height: '64px', fontSize: '24px', margin: '0 auto 1rem' }}>
+          N
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 style={{ fontSize: '24px', fontWeight: '700', color: 'var(--fg)', marginBottom: '0.5rem' }}>
           Welcome back
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p style={{ color: 'var(--muted)' }}>
           Sign in to your account to continue
         </p>
       </div>
 
       {/* Login Form */}
       <div className="card">
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="stack">
           {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="fieldset">
+            <label htmlFor="email" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--fg)' }}>
               Email address
             </label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div style={{ position: 'relative' }}>
+              <Mail className="input-icon" />
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="input pl-10"
+                className="input input--with-icon"
                 required
                 disabled={loading}
               />
@@ -74,42 +75,48 @@ export default function Login() {
           </div>
 
           {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="fieldset">
+            <label htmlFor="password" style={{ fontSize: '14px', fontWeight: '600', color: 'var(--fg)' }}>
               Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <div style={{ position: 'relative' }}>
+              <Lock className="input-icon" />
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="input pl-10 pr-10"
+                className="input input--with-icon"
+                style={{ paddingRight: '2.5rem' }}
                 required
                 disabled={loading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="icon-btn"
+                style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)' }}
                 disabled={loading}
               >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-              <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.5rem', 
+              padding: '0.75rem', 
+              background: 'var(--danger-100)', 
+              border: '1px solid var(--danger-800)', 
+              borderRadius: '10px' 
+            }}>
+              <AlertCircle size={20} style={{ color: 'var(--danger-800)' }} />
+              <span style={{ color: 'var(--danger-800)', fontSize: '14px' }}>{error}</span>
             </div>
           )}
 
@@ -117,29 +124,34 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary flex items-center justify-center gap-2"
+            className="btn btn--primary"
+            style={{ width: '100%', gap: '0.5rem' }}
           >
             {loading ? (
               <>
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
                 Signing in...
               </>
             ) : (
               <>
                 Sign in
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight size={16} />
               </>
             )}
           </button>
         </form>
 
         {/* Register Link */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 dark:text-gray-400">
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+          <p style={{ color: 'var(--muted)' }}>
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
+              style={{ 
+                color: 'var(--primary-500)', 
+                fontWeight: '600',
+                textDecoration: 'none'
+              }}
             >
               Create one here
             </Link>
@@ -148,11 +160,11 @@ export default function Login() {
       </div>
 
       {/* Demo Credentials */}
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-        <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+      <div className="card" style={{ marginTop: '1.5rem', background: 'var(--info-100)', borderColor: 'var(--info-800)' }}>
+        <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--info-800)', marginBottom: '0.5rem' }}>
           Demo Credentials
         </h3>
-        <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+        <div style={{ fontSize: '12px', color: 'var(--info-800)' }}>
           <p><strong>Email:</strong> demo@example.com</p>
           <p><strong>Password:</strong> password123</p>
         </div>
